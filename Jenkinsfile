@@ -15,10 +15,10 @@ pipeline {
 
             post {
                 success {
-                    githubCommitStatus('SUCCESS', 'Jenkins build passed.')
+                    echo 'Success on script execution!'
                 }
                 failure {
-                    githubCommitStatus('FAILURE', 'Jenkins build failed.')
+                    echo 'Failed to execute the script!'
                     sh 'rm Employees.db'
                     sh 'sqlite3 Employees.db < dump.sql'
                 }
