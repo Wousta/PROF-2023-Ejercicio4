@@ -3,7 +3,7 @@ pipeline {
 
     stages {
 
-        stage('DB management') {
+        stage('DB management ') {
             steps {
                 script {
                     sh 'sqlite3 Employees.db .dump > dump.sql'
