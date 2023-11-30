@@ -15,15 +15,16 @@ pipeline {
 
             post {
                 success {
-                    echo 'Success on script execution!'
+                    script {
+                        currentBuild.result = 'SUCCESS'
+                        githubNotify()
+                    }
                 }
                 failure {
-                    echo 'Failed to execute the script!'
-                    sh 'rm Employees.db'
-                    sh 'sqlite3 Employees.db < dump.sql'
-                }
-                always {
-                    sh 'rm dump.sql'
+                    script {
+                        currentBuild.result = 'FAILURE'
+                        githubNotify()
+                    }
                 }
             }
         }
