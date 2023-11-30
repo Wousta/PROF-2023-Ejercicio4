@@ -13,20 +13,6 @@ pipeline {
                 }
             }
 
-            post {
-                success {
-                    script {
-                        currentBuild.result = 'SUCCESS'
-                        githubNotify()
-                    }
-                }
-                failure {
-                    script {
-                        currentBuild.result = 'FAILURE'
-                        githubNotify()
-                    }
-                }
-            }
         }
     }
 }
