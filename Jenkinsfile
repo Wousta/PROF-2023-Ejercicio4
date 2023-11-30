@@ -1,26 +1,31 @@
 pipeline {
-    // Define stages and steps here
     agent any
+
     stages {
-        stage('Backup') {
+
+        stage('DB management') {
             steps {
-                echo 'Building..'
+                script {
+                    sh 'sqlite3 Employees.db .dump > dump.sql'
+                    sh 'rm Employees.db'
+                    sh 'sqlite3 Employees.db < sqlite.sql'
+                    sh 'cat dump.sql | awk \'/^INSERT.*;$/\' | sqlite3 Employees.db'
+                }
+            }
+
+            post {
+                success {
+                    echo 'Success on script execution!'
+                }
+                failure {
+                    echo 'Failed to execute the script!'
+                    sh 'rm Employees.db'
+                    sh 'sqlite3 Employees.db < dump.sql'
+                }
+                always {
+                    sh 'rm dump.sql'
+                }
             }
         }
-        stage('DropSchema') {
-            steps {
-                echo 'Testing..'
-            }
-        }
-        stage('newSchema') {
-            steps {
-                echo 'Deploying....'
-            }
-        }
-        stage('Restore') {
-            steps {
-                echo 'Deploying....'
-            }
-        }   
     }
 }
