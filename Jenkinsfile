@@ -51,7 +51,7 @@ pipeline {
     }
     post {
         success {
-            postGithubStatus('success', 'All stages completed successfully.')
+            postGithubStatus('success', 'All stages completed successfully. ')
         }
         failure {
             postGithubStatus('failure', 'One or more stages failed.')
