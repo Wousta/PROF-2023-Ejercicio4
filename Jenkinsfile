@@ -37,9 +37,13 @@ pipeline {
                     def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
                     githubNotify(
                         repo: 'Wousta/PROF-2023-Ejercicio4',
-                        status: currentBuild.currentResult, // Status based on build result
-                        sha: gitCommit,
-                        accessToken: env.luisbToken
+                        commitSha: gitCommit,
+                        credentialsId: env.luisbToken,
+                        errorHandlers: [[$class: 'ChangingBuildStatusErrorHandler']],
+                        statusResult: currentBuild.currentResult,
+                        statusContext: 'Jenkins CI',
+                        statusDescription: 'Build Status',
+                        targetUrl: env.BUILD_URL
                     )
                 }
             }
