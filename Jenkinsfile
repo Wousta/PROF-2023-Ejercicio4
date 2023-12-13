@@ -1,4 +1,26 @@
-import groovy.json.JsonOutput
+def postGithubStatus(String status, String description) {
+    // Define the context
+    def context = 'continuous-integration/jenkins' // or any other context
+
+    // Define the GitHub API URL for the commit status
+    def apiUrl = "https://api.github.com/repos/Wousta/PROF-2023-Ejercicio4/statuses/${env.GIT_COMMIT}"
+
+    // Define the JSON payload
+    def payload = JsonOutput.toJson([
+        state: status,
+        description: description,
+        context: context
+    ])
+
+    // Send the request to the GitHub API
+    withCredentials([string(credentialsId: 'luisbToken', variable: 'GITHUB_TOKEN')]) {
+        sh '''
+            curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d ''' + "'${payload}'" + ''' \
+            ''' + "'${apiUrl}'"
+    }
+}
 
 pipeline {
     agent any
@@ -26,34 +48,16 @@ pipeline {
                 sh "cat Employees.db"
             }
         }
-        stage('Create GitHub commit status') {
-            steps {
-                script {
-                    // Define the status
-                    def status = 'success' // or 'failure', 'error', 'pending'
-                    def description = 'The build completed successfully.' // or any other message
-                    def context = 'continuous-integration/jenkins' // or any other context
-
-                    // Define the GitHub API URL for the commit status
-                    def apiUrl = "https://api.github.com/repos/Wousta/PROF-2023-Ejercicio4/statuses/${env.GIT_COMMIT}"
-
-                    // Define the JSON payload
-                    def payload = JsonOutput.toJson([
-                        state: status,
-                        description: description,
-                        context: context
-                    ])
-
-                    // Send the request to the GitHub API
-                    withCredentials([string(credentialsId: 'luisbToken', variable: 'GITHUB_TOKEN')]) {
-                        sh '''
-                            curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
-                            -H "Content-Type: application/json" \
-                            -d ''' + "'${payload}'" + ''' \
-                            ''' + "'${apiUrl}'"
-                    }
-                }
-            }
+    }
+    post {
+        success {
+            postGithubStatus('success', 'All stages completed successfully.')
+        }
+        failure {
+            postGithubStatus('failure', 'One or more stages failed.')
+        }
+        unstable {
+            postGithubStatus('error', 'One or more stages completed with errors.')
         }
     }
 }
