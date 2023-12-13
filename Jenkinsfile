@@ -39,12 +39,13 @@ pipeline {
                     githubNotify(
                         def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
                         withCredentials([string(credentialsId: 'luisbToken', variable: 'GITHUB_ACCESS_TOKEN')]) {
-                        sh '''
-                            curl -X POST -H "Authorization: token $GITHUB_ACCESS_TOKEN" \
-                            -H "Content-Type: application/json" \
-                            -d '{"state":"success", "context":"Jenkins CI", "description":"Build Status", "target_url":"$BUILD_URL"}' \
-                            "https://api.github.com/repos/${REPO_NAME}/statuses/${gitCommit}"
-                        '''
+                            def token = env.GITHUB_ACCESS_TOKEN
+                            def curlCmd = "curl -X POST -H 'Authorization: token ${token}' \
+                                -H 'Content-Type: application/json' \
+                                -d '{\"state\":\"success\", \"context\":\"Jenkins CI\", \"description\":\"Build Status\", \"target_url\":\"${env.BUILD_URL}\"}' \
+                                https://api.github.com/repos/${REPO_NAME}/statuses/${gitCommit}"
+
+                            sh(curlCmd)
                         }
                     )
                 }
