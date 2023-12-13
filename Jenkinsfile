@@ -30,7 +30,7 @@ pipeline {
             steps {
                 script {
                     // Define the status
-                    def status = 'success ' // or 'failure', 'error', 'pending'
+                    def status = 'success' // or 'failure', 'error', 'pending'
                     def description = 'The build completed successfully.' // or any other message
                     def context = 'continuous-integration/jenkins' // or any other context
 
