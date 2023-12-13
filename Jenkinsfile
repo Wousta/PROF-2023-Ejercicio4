@@ -35,7 +35,12 @@ pipeline {
                 script {
                     // Update GitHub status as per build result
                     def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-                    githubNotify context: 'Pipeline', description: 'Build Status', status: currentBuild.currentResult, commitSha1: gitCommit, targetUrl: "${BUILD_URL}"
+                    githubNotify(
+                        repo: 'Wousta/PROF-2023-Ejercicio4',
+                        status: currentBuild.currentResult, // Status based on build result
+                        sha: gitCommit,
+                        accessToken: env.luisbToken
+                    )
                 }
             }
         }
