@@ -45,6 +45,7 @@ pipeline {
                              -H 'Content-Type: application/json' \
                              -d '{\"state\":\"success\", \"context\":\"Jenkins CI\", \"description\":\"Build Status\", \"target_url\":\"${env.BUILD_URL}\"}' \
                              https://api.github.com/repos/${REPO_NAME}/statuses/${gitCommit}"
+                        }
                     )
                 }
             }
