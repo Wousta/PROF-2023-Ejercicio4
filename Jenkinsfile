@@ -36,8 +36,6 @@ pipeline {
         stage('Update GitHub Status') {
             steps {
                 script {
-                    // Update GitHub status as per build result
-                    def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
                     githubNotify(
                         def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
                         withCredentials([string(credentialsId: 'luisbToken', variable: 'GITHUB_ACCESS_TOKEN')]) {
