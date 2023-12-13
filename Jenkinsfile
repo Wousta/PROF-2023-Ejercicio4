@@ -30,5 +30,14 @@ pipeline {
                 sh "cat Employees.db"
             }
         }
+        stage('Update GitHub Status') {
+            steps {
+                script {
+                    // Update GitHub status as per build result
+                    def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+                    githubNotify context: 'Pipeline', description: 'Build Status', status: currentBuild.currentResult, commitSha1: gitCommit, targetUrl: "${BUILD_URL}"
+                }
+            }
+        }
     }
 }
