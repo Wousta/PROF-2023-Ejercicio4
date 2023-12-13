@@ -46,12 +46,11 @@ pipeline {
 
                     // Send the request to the GitHub API
                     withCredentials([string(credentialsId: 'luisbToken', variable: 'GITHUB_TOKEN')]) {
-                        sh """
-                            curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
+                        sh '''
+                            curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
                             -H "Content-Type: application/json" \
-                            -d '${payload}' \
-                            '${apiUrl}'
-                        """
+                            -d ''' + "'${payload}'" + ''' \
+                            ''' + "'${apiUrl}'"
                     }
                 }
             }
