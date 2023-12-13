@@ -1,14 +1,7 @@
+import groovy.json.JsonOutput
+
 pipeline {
     agent any
-    environment {
-        REPO_NAME = 'Wousta/PROF-2023-Ejercicio4'
-    }
-    /*
-    Make a backup of the current data in the database.
-    Delete the current schema. Perhaps a DROP DATABASE could be performed.
-    Load the new schema.
-    Restore the previously backed up data.
-    */
     stages {
         stage('Backup') {
             steps {
@@ -31,6 +24,36 @@ pipeline {
                 echo 'Restore'
                 sh "sqlite3 Employees.db '.restore Backup.db'"
                 sh "cat Employees.db"
+            }
+        }
+        stage('Create GitHub commit status') {
+            steps {
+                script {
+                    // Define the status
+                    def status = 'success' // or 'failure', 'error', 'pending'
+                    def description = 'The build completed successfully.' // or any other message
+                    def context = 'continuous-integration/jenkins' // or any other context
+
+                    // Define the GitHub API URL for the commit status
+                    def apiUrl = "https://api.github.com/repos/Wousta/PROF-2023-Ejercicio4/statuses/${env.GIT_COMMIT}"
+
+                    // Define the JSON payload
+                    def payload = JsonOutput.toJson([
+                        state: status,
+                        description: description,
+                        context: context
+                    ])
+
+                    // Send the request to the GitHub API
+                    withCredentials([string(credentialsId: 'luisbToken', variable: 'GITHUB_TOKEN')]) {
+                        sh """
+                            curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
+                            -H "Content-Type: application/json" \
+                            -d '${payload}' \
+                            '${apiUrl}'
+                        """
+                    }
+                }
             }
         }
     }
