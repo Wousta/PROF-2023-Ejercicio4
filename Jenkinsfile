@@ -1,3 +1,5 @@
+import groovy.json.JsonOutput
+
 def postGithubStatus(String status, String description) {
     // Define the context
     def context = 'continuous-integration/jenkins' // or any other context
