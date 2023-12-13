@@ -1,15 +1,11 @@
-pipeline {
-    agent any
-    environment {
-        REPO_NAME = 'Wousta/PROF-2023-Ejercicio4'
-    }
+node {
+    def REPO_NAME = 'Wousta/PROF-2023-Ejercicio4'
     /*
     Make a backup of the current data in the database.
     Delete the current schema. Perhaps a DROP DATABASE could be performed.
     Load the new schema.
     Restore the previously backed up data.
     */
-    stages {
         stage('Backup') {
             steps {
                 echo 'Backup'
@@ -46,5 +42,5 @@ pipeline {
 
             sh(curlCmd)
         }
-    }
+    
 }
