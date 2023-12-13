@@ -34,21 +34,17 @@ pipeline {
             }
         }
         stage('Update GitHub Status') {
-            steps {
-                script {
-                    githubNotify(
-                        def gitCommit = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-                        def token = credentials('luisbToken')
+            def gitCommit = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+        
+            // Retrieve GitHub token from Jenkins credentials
+            def token = credentials('luisbToken')
 
-                        def curlCmd = "curl -X POST -H 'Authorization: token ${token}' \
+            def curlCmd = "curl -X POST -H 'Authorization: token ${token}' \
                             -H 'Content-Type: application/json' \
                             -d '{\"state\":\"success\", \"context\":\"Jenkins CI\", \"description\":\"Build Status\", \"target_url\":\"${env.BUILD_URL}\"}' \
                             https://api.github.com/repos/${REPO_NAME}/statuses/${gitCommit}"
 
-                        sh(curlCmd)
-                    )
-                }
-            }
+            sh(curlCmd)
         }
     }
 }
